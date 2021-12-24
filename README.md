@@ -1,7 +1,6 @@
 # AR_Project_2021
-
-arFoundation을_이용한_unity_AR앱입니다.
-.                                                            
+ARFoundation을_이용한_unity_AR앱입니다.                                             
+.                                                           
 .                                                            
 .                                                            
 개발기간 : 2021.7.01 ~ 2021.12.31                                           
