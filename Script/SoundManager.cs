@@ -23,16 +23,21 @@ public class SoundManager : MonoBehaviour
     [SerializeField]
     GameObject[] _playPauseUI;
 
+    int []startTimeMinInt = new int [2];
+    string []startTimeMinString = new string[2];
+    int []endTimeMinInt = new int[2];
+    string []endTimeMinString = new string[2];
+
+
 
 
     private void Start()
     {
         if (_uiObj.activeInHierarchy != true) return;
 
-         _uiObj.SetActive(false);
-                 
-        _playPauseUI[0].SetActive(true);
-        _playPauseUI[1].SetActive(false);
+         _uiObj.SetActive(false);              
+        _playPauseUI[0].SetActive(false);
+        _playPauseUI[1].SetActive(true);
 
         _audioSource.time = 0;
     }
@@ -43,8 +48,10 @@ public class SoundManager : MonoBehaviour
     {
         if (_audioSource.isPlaying != true) return;
 
-        _timeText[0].text = ((int)_audioSource.time).ToString() + " 초";
-        _timeText[1].text = ((int)_audioSource.clip.length).ToString() + " 초";
+        changeTimeText();
+
+        _timeText[0].text = startTimeMinString[0] + startTimeMinInt[0].ToString() + " : " + startTimeMinString[1] + startTimeMinInt[1].ToString() + " ";
+        _timeText[1].text = endTimeMinString[0] + endTimeMinInt[0].ToString() + " : " + endTimeMinString[1] + endTimeMinInt[1].ToString() + " ";
 
         _slider.value = _audioSource.time / _audioSource.clip.length;
     }
@@ -135,14 +142,14 @@ public class SoundManager : MonoBehaviour
                 _playPauseUI[0].SetActive(false);
                 _playPauseUI[1].SetActive(true);
 
-                _audioSource.Pause();
+                _audioSource.Play();
                 break;
 
             case "Pause":
                 _playPauseUI[0].SetActive(true);
                 _playPauseUI[1].SetActive(false);
 
-                _audioSource.Play();
+                _audioSource.Pause();
                 break;
         }
     }
@@ -152,14 +159,38 @@ public class SoundManager : MonoBehaviour
         _arManagerScript.turnOffAR();
 
         _uiObj.SetActive(false);
-        _playPauseUI[0].SetActive(true);
-        _playPauseUI[1].SetActive(false);
+        _playPauseUI[0].SetActive(false);
+        _playPauseUI[1].SetActive(true);
+        _audioSource.time = 0;
     }
 
     // 사운드 슬라이드 터치시 발동
     public void valueChange()
     {
+        changeTimeText();
+
         _audioSource.time = _slider.value * _audioSource.clip.length;
-        _timeText[0].text = ((int)_audioSource.time).ToString() + " 초";
+        _timeText[0].text = startTimeMinString[0] + startTimeMinInt[0].ToString() + " : " + startTimeMinString[1] + startTimeMinInt[1].ToString() + " ";
+    }
+
+    void changeTimeText()
+    {
+        startTimeMinInt[0] = (((int)_audioSource.time) / 60);
+        endTimeMinInt[0] = ((int)_audioSource.clip.length / 60);
+
+        startTimeMinInt[1] = (((int)_audioSource.time) % 60);
+        endTimeMinInt[1] = ((int)_audioSource.clip.length % 60);
+
+        for (int i = 0; i < startTimeMinInt.Length; i++)
+        {
+            startTimeMinString[0] = (startTimeMinInt[0] >= 0) && (startTimeMinInt[0] < 10) ? 0.ToString() : null;
+            startTimeMinString[1] = (startTimeMinInt[1] >= 0) && (startTimeMinInt[1] < 10) ? 0.ToString() : null;
+        }
+
+        for (int i = 0; i < endTimeMinInt.Length; i++)
+        {
+            endTimeMinString[0] = (endTimeMinInt[0] >= 0) && (endTimeMinInt[0] < 10) ? 0.ToString() : null;
+            endTimeMinString[1] = (endTimeMinInt[1] >= 0) && (endTimeMinInt[1] < 10) ? 0.ToString() : null;
+        }
     }
 }
