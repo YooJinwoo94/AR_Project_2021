@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -11,7 +11,7 @@ public class ARManager : MonoBehaviour
     [SerializeField]
     GameObject blackBG;
     [SerializeField]
-   public GameObject[] noticeObj;
+    public GameObject[] noticeObj;
 
     [SerializeField]
     SoundManager _soundManagerScript;
@@ -34,7 +34,7 @@ public class ARManager : MonoBehaviour
     List<ARTrackedImage> tNumList = new List<ARTrackedImage>();
     List<ARTrackedImage> _trackedImg = new List<ARTrackedImage>();
     List<float> _trackedTimer = new List<float>();
-    const float _timer = 5;
+    const float _timer = 4;
 
 
 
@@ -45,13 +45,13 @@ public class ARManager : MonoBehaviour
         isSetPosAndRotation = false;
         objName = null;
 
-        // dic ¿¡ ÀÌ¸§À» ³Ö¾îÁØ´Ù.
+        // dic ì— ì´ë¦„ì„ ë„£ì–´ì¤€ë‹¤.
         foreach (GameObject obj in objList)
         {
             string tName = obj.name;
             preFabDic.Add(tName, obj);
         }
-        // È¤½Ã ¸ğ¸£´Ï ÃÊ±âÈ­¸¦ ÇØÁİ´Ï´Ù.
+        // í˜¹ì‹œ ëª¨ë¥´ë‹ˆ ì´ˆê¸°í™”ë¥¼ í•´ì¤ë‹ˆë‹¤.
         for (int i = 0; i < objList.Count; i++)
         {
             objList[i].SetActive(false);
@@ -66,10 +66,10 @@ public class ARManager : MonoBehaviour
     {
         if (_trackedImg.Count > 0)
         {
-            // Ä«¸Ş¶ó¿¡ ¾Èº¸ÀÌ´Â ½Ã°£ÀÌ ¾î´ÀÁ¤µµ Áö³­°æ¿ì
-            for (int i = 0; i<_trackedImg.Count; i++)
+            // ì¹´ë©”ë¼ì— ì•ˆë³´ì´ëŠ” ì‹œê°„ì´ ì–´ëŠì •ë„ ì§€ë‚œê²½ìš°
+            for (int i = 0; i < _trackedImg.Count; i++)
             {
-                switch(_trackedImg[i].trackingState)
+                switch (_trackedImg[i].trackingState)
                 {
                     case UnityEngine.XR.ARSubsystems.TrackingState.Limited:
                         if (_trackedTimer[i] > _timer)
@@ -83,40 +83,12 @@ public class ARManager : MonoBehaviour
                         break;
                 }
             }
-
-            //Áßº¹ ¿µ»ó ¸ØÃç!
-            switch (_trackedImg.Count)
-               {
-                case 0:
-                    break;
-
-                case 1:
-                    break;
-
-                  default :
-                    turnOffAR();
-                     break;
-               }
-               
-            //ÀÚÀÌÁ¦ Áö¿öÁà!
-            if (tNumList.Count>0)
-             {
-                 for (int i = 0; i < tNumList.Count; i++)
-                    {
-                       int num = _trackedImg.IndexOf(tNumList[i]);
-
-                        tNumList.Remove(_trackedImg[num]);
-
-                        _trackedImg.Remove(_trackedImg[num]);
-                        _trackedTimer.Remove(_trackedTimer[num]);
-                    }
-             }
-        }
+        } 
     }
 
 
 
-    //AR foundationÀÇ ±â´ÉÀÔ´Ï´Ù.
+    //AR foundationì˜ ê¸°ëŠ¥ì…ë‹ˆë‹¤.
     private void OnEnable()
     {
         trackedImageManager.trackedImagesChanged += imageChanged;
@@ -130,17 +102,26 @@ public class ARManager : MonoBehaviour
 
 
 
-   public void turnOffAR()
+    public void turnOffAR()
     {
+        if (isSetPosAndRotation == false) return;
         isSetPosAndRotation = false;
 
-        string name = _trackedImg[0].referenceImage.name;
-        GameObject tObj = preFabDic[name];
-        tObj.SetActive(false);
-
-        isSetPosAndRotation = false;
         turnOnOffNotice("turnOnNotice00");
+
         tNumList.Add(_trackedImg[0]);
+
+        for (int i = 0; i < tNumList.Count; i++)
+        {
+            string name = _trackedImg[0].referenceImage.name;
+            GameObject tObj = preFabDic[name];
+            tObj.SetActive(false);
+
+            int num = _trackedImg.IndexOf(tNumList[i]);
+            tNumList.Remove(_trackedImg[num]);
+            _trackedImg.Remove(_trackedImg[num]);
+            _trackedTimer.Remove(_trackedTimer[num]);
+        }
 
         _soundManagerScript.turnOnOffUI("End");
     }
@@ -149,23 +130,25 @@ public class ARManager : MonoBehaviour
 
 
 
-    //AR foundationÀÇ ±â´ÉÀÔ´Ï´Ù.
+    //AR foundationì˜ ê¸°ëŠ¥ì…ë‹ˆë‹¤.
     void imageChanged(ARTrackedImagesChangedEventArgs eventArgs)
     {
-        // ÀÌ¹ÌÁö°¡ Ãß°¡‰çÀ» °æ¿ì
+        // ì´ë¯¸ì§€ê°€ ì¶”ê°€Â‰ç‘› ê²½ìš°
         foreach (ARTrackedImage trackedImage in eventArgs.added)
         {
             if (!_trackedImg.Contains(trackedImage))
             {
+                if (_trackedImg.Count == 1) turnOffAR();
+
                 _trackedImg.Add(trackedImage);
                 _trackedTimer.Add(0);
             }
         }
 
-        // ÀÌ¹ÌÁö°¡ º¯È­ÇßÀ» °æ¿ì
+        // ì´ë¯¸ì§€ê°€ ë³€í™”í–ˆì„ ê²½ìš°
         foreach (ARTrackedImage trackedImage in eventArgs.updated)
         {
-           if (!_trackedImg.Contains(trackedImage))
+            if (!_trackedImg.Contains(trackedImage))
             {
                 switch (trackedImage.trackingState)
                 {
@@ -177,7 +160,7 @@ public class ARManager : MonoBehaviour
                         }
                 }
             }
-           else
+            else
             {
                 switch (trackedImage.trackingState)
                 {
@@ -189,7 +172,7 @@ public class ARManager : MonoBehaviour
                         }
                 }
             }
-            
+
             updateImage(trackedImage);
         }
     }
@@ -200,36 +183,36 @@ public class ARManager : MonoBehaviour
 
 
 
-    //´ë»óÀ» ²¨ÁÖ°Å³ª ÄÑÁÖ´Â ÇÔ¼öÀÔ´Ï´Ù.
+    //ëŒ€ìƒì„ êº¼ì£¼ê±°ë‚˜ ì¼œì£¼ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     void updateImage(ARTrackedImage trackedImage)
     {
         objName = trackedImage.referenceImage.name;
         GameObject tobj = preFabDic[objName];
-      //  tobj.transform.position = trackedImage.transform.position;
-      //  tobj.transform.rotation = trackedImage.transform.rotation;
+        tobj.transform.position = trackedImage.transform.position;
+        //  tobj.transform.rotation = trackedImage.transform.rotation;
 
         switch (trackedImage.trackingState)
         {
             case UnityEngine.XR.ARSubsystems.TrackingState.Tracking:
 
-               if (isSetPosAndRotation == false)
-               {
+                if (isSetPosAndRotation == false)
+                {
                     isSetPosAndRotation = true;
                     turnOnOffNotice("turnOffNotice00AndNotice01");
                     blackImageOn();
                     tobj.SetActive(true);
                     videoManagerScript.videoCon(objName);
-                   
+
                     _soundManagerScript.turnOnOffUI("Start", objName);
-                      tobj.transform.position = trackedImage.transform.position;
-                      tobj.transform.rotation = trackedImage.transform.rotation;
+                    tobj.transform.position = trackedImage.transform.position;
+                    tobj.transform.rotation = trackedImage.transform.rotation;
                 }
-                    break;   
+                break;
         }
     }
 
 
-    //¾Ë¶÷Ã¢ ÄÁÆ®·Ñ·¯!
+    //ì•ŒëŒì°½ ì»¨íŠ¸ë¡¤ëŸ¬!
     void turnOnOffNotice(string name)
     {
         switch (name)
@@ -253,14 +236,14 @@ public class ARManager : MonoBehaviour
 
 
 
-    // ºñµğ¿À°¡ ÄÑÁú‹š »ç°¢ ¹Ú½º ÀÌ¹ÌÁö°¡ 5ÃÊÁ¤µµ º¸ÀÌ´Â Çö»óÀÌ »ı±é´Ï´Ù.
-    // ÇØ´ç Çö»óÀ» °¡·ÁÁÖ±â À§ÇØ ÀÌ¹ÌÁö¸¦ °¡¸³´Ï´Ù.
+    // ë¹„ë””ì˜¤ê°€ ì¼œì§ˆÂ‹Âš ì‚¬ê° ë°•ìŠ¤ ì´ë¯¸ì§€ê°€ 5ì´ˆì •ë„ ë³´ì´ëŠ” í˜„ìƒì´ ìƒê¹ë‹ˆë‹¤.
+    // í•´ë‹¹ í˜„ìƒì„ ê°€ë ¤ì£¼ê¸° ìœ„í•´ ì´ë¯¸ì§€ë¥¼ ê°€ë¦½ë‹ˆë‹¤.
     void blackImageOn()
     {
         blackBG.SetActive(true);
         turnOnOffNotice("turnOnNotice01");
 
-        Invoke("conImage",1f);
+        Invoke("conImage", 1f);
     }
 
     void conImage()
