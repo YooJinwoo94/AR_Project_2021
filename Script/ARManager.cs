@@ -188,27 +188,35 @@ public class ARManager : MonoBehaviour
     {
         objName = trackedImage.referenceImage.name;
         GameObject tobj = preFabDic[objName];
-        tobj.transform.position = trackedImage.transform.position;
-        //  tobj.transform.rotation = trackedImage.transform.rotation;
 
         switch (trackedImage.trackingState)
         {
             case UnityEngine.XR.ARSubsystems.TrackingState.Tracking:
-
                 if (isSetPosAndRotation == false)
                 {
                     isSetPosAndRotation = true;
                     turnOnOffNotice("turnOffNotice00AndNotice01");
                     blackImageOn();
                     tobj.SetActive(true);
-                    videoManagerScript.videoCon(objName);
-
+                    videoManagerScript.videoCon(objName);                  
                     _soundManagerScript.turnOnOffUI("Start", objName);
-                    tobj.transform.position = trackedImage.transform.position;
-                    tobj.transform.rotation = trackedImage.transform.rotation;
                 }
+                //tobj.transform.position = trackedImage.transform.position;
+                // tobj.transform.rotation = Quaternion.Euler(-90, -45, 0);
                 break;
         }
+
+        // 오브젝트가 계속 돌아가는 경향이 있어서 
+        // 일정 부분은 돌아가지 않도록 설정
+        tobj.transform.position = trackedImage.transform.position;
+        if ( (trackedImage.transform.rotation.y < 1 || trackedImage.transform.rotation.y > -1) &&
+            (trackedImage.transform.rotation.x < 1 || trackedImage.transform.rotation.x > -1) &&
+            (trackedImage.transform.rotation.z < 1 || trackedImage.transform.rotation.z > -1))
+        {
+            tobj.transform.rotation = trackedImage.transform.rotation;
+        }
+        
+        Debug.Log(tobj.transform.rotation);
     }
 
 
