@@ -28,3 +28,9 @@ ARFoundation을_이용한_unity_AR앱입니다.
 4. https://www.youtube.com/watch?v=gi9iHTY9z1o&t=4s ( ARFoundation 사용 ) 
 5. https://www.youtube.com/watch?v=Ml2UakwRxjk ( ARFoundation 사용 ) 
 6. https://www.youtube.com/watch?v=ylLP09RG_3g ( ARFoundation의 depth 기능 사용 ) 
+.  
+.  
+.  
+Addressable에서 구글 클라우드로 사용시 주의점                                     
+![cacaca](https://user-images.githubusercontent.com/71114491/162564230-a1e33717-fae7-4719-9256-11dfbab2cb60.PNG)
+
